@@ -50,7 +50,7 @@ locals {
     management     = "mgt."
   }
 
-//  dw_domain = "${local.env_prefix[local.environment]}${var.root_domain}"
+  //  dw_domain = "${local.env_prefix[local.environment]}${var.root_domain}"
 
   whitelist_names = {
     ci_cd        = "whitelist_ci_cd"

@@ -22,8 +22,8 @@ variable "project_team" {
 
 variable "root_domain" {
   description = "The root domain for use with the deployment Route53 records"
-  type = string
-  default = "ROOT_DOMAIN_NOT_SET"
+  type        = string
+  default     = "ROOT_DOMAIN_NOT_SET"
 }
 
 variable "ami_id" {

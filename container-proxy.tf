@@ -23,18 +23,18 @@ data "aws_iam_policy_document" "container_egress_proxy_read_config" {
     ]
   }
 
-// TODO: KMS Encryption TBD
-//  statement {
-//    effect = "Allow"
-//
-//    actions = [
-//      "kms:Decrypt",
-//    ]
-//
-//    resources = [
-//      data.terraform_remote_state.management.outputs.config_bucket.cmk_arn,
-//    ]
-//  }
+  // TODO: KMS Encryption TBD
+  //  statement {
+  //    effect = "Allow"
+  //
+  //    actions = [
+  //      "kms:Decrypt",
+  //    ]
+  //
+  //    resources = [
+  //      data.terraform_remote_state.management.outputs.config_bucket.cmk_arn,
+  //    ]
+  //  }
 }
 
 resource "aws_iam_role" "container_egress_proxy" {
@@ -122,8 +122,8 @@ DEFINITION
 }
 
 resource "aws_ecs_service" "container_egress_proxy" {
-  name            = "container-internet-proxy"
-//  cluster         = data.terraform_remote_state.management.outputs.ecs_cluster_main.id
+  name = "container-internet-proxy"
+  //  cluster         = data.terraform_remote_state.management.outputs.ecs_cluster_main.id
   cluster         = local.ecs_cluster.id
   task_definition = aws_ecs_task_definition.container_egress_proxy.arn
   desired_count   = length(data.aws_availability_zones.current.names)
@@ -147,11 +147,11 @@ resource "aws_acm_certificate" "internet_proxy" {
 }
 
 resource "aws_route53_record" "cert_validation" {
-  name     = aws_acm_certificate.internet_proxy.domain_validation_options[0].resource_record_name
-  type     = aws_acm_certificate.internet_proxy.domain_validation_options[0].resource_record_type
-  zone_id  = local.hosted_zone
-  records  = [aws_acm_certificate.internet_proxy.domain_validation_options[0].resource_record_value]
-  ttl      = 60
+  name    = aws_acm_certificate.internet_proxy.domain_validation_options[0].resource_record_name
+  type    = aws_acm_certificate.internet_proxy.domain_validation_options[0].resource_record_type
+  zone_id = local.hosted_zone
+  records = [aws_acm_certificate.internet_proxy.domain_validation_options[0].resource_record_value]
+  ttl     = 60
 }
 
 resource "aws_acm_certificate_validation" "internet_proxy" {

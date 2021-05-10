@@ -1,12 +1,12 @@
 module "vpc" {
-  count                                    = var.create_vpc ? 1 : 0
+  count = var.create_vpc ? 1 : 0
 
-  source                                   = "terraform-aws-modules/vpc/aws"
-  version                                  = "2.78.0"
-  region                                   = var.region
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.78.0"
+  region  = var.region
 
-  name                                     = join(".", [var.vpc_name, local.environment])
-  cidr                                     = var.cidr.vpc
+  name = join(".", [var.vpc_name, local.environment])
+  cidr = var.cidr.vpc
 
   azs             = local.zone_names
   private_subnets = var.cidr.private
@@ -15,32 +15,32 @@ module "vpc" {
   enable_nat_gateway = true
   create_igw         = true
 
-//  gateway_vpce_route_table_ids             = aws_route_table.proxy.*.id
-//  interface_vpce_source_security_group_ids = [aws_security_group.internet_proxy.id]
-//  interface_vpce_subnet_ids                = aws_subnet.proxy.*.id
+  //  gateway_vpce_route_table_ids             = aws_route_table.proxy.*.id
+  //  interface_vpce_source_security_group_ids = [aws_security_group.internet_proxy.id]
+  //  interface_vpce_subnet_ids                = aws_subnet.proxy.*.id
 
-  enable_ecr_api_endpoint        = true
-  enable_ecr_dkr_endpoint        = true
-  enable_ec2_endpoint            = true
-  enable_ec2messages_endpoint    = true
-  enable_ssm_endpoint            = true
-  enable_ssmmessages_endpoint    = true
-  enable_s3_endpoint             = true
-  enable_public_s3_endpoint      = true
-  enable_monitoring_endpoint     = true
-  enable_logs_endpoint           = true
+  enable_ecr_api_endpoint     = true
+  enable_ecr_dkr_endpoint     = true
+  enable_ec2_endpoint         = true
+  enable_ec2messages_endpoint = true
+  enable_ssm_endpoint         = true
+  enable_ssmmessages_endpoint = true
+  enable_s3_endpoint          = true
+  enable_public_s3_endpoint   = true
+  enable_monitoring_endpoint  = true
+  enable_logs_endpoint        = true
 
-//  aws_vpce_services = [
-//    "ecr.dkr",
-//    "ecr.api",
-//    "ec2",
-//    "ec2messages",
-//    "ssm",
-//    "ssmmessages",
-//    "s3",
-//    "monitoring",
-//    "logs"
-//  ]
+  //  aws_vpce_services = [
+  //    "ecr.dkr",
+  //    "ecr.api",
+  //    "ec2",
+  //    "ec2messages",
+  //    "ssm",
+  //    "ssmmessages",
+  //    "s3",
+  //    "monitoring",
+  //    "logs"
+  //  ]
 
   tags = {
     Terraform   = "true"
@@ -174,7 +174,7 @@ locals {
     public_subnets              = module.vpc[0].public_subnets
     vpc_endpoint_s3_pl_id       = module.vpc[0].vpc_endpoint_s3_pl_id
     vpc_endpoint_dynamodb_pl_id = module.vpc[0].vpc_endpoint_dynamodb_pl_id
-  } : {
+    } : {
     vpc_id                      = data.aws_vpc.vpc[0].id
     private_subnets             = var.private_subnets.ids
     private_subnets_cidr_blocks = var.private_subnets.cidr_blocks

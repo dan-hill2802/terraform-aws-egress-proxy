@@ -1,40 +1,27 @@
-data "aws_secretsmanager_secret_version" "internet_egress" {
-  secret_id = "/internet-egress"
-}
+//data "aws_secretsmanager_secret_version" "internet_egress" {
+//  secret_id = "/internet-egress"
+//}
 
 locals {
-  account = {
-    management-dev = ""
-    management     = ""
-    development    = ""
-    qa             = ""
-    integration    = ""
-    preprod        = ""
-    production     = ""
-  }
+  name        = var.project_name
+  environment = terraform.workspace == "default" ? "mgmt-dev" : terraform.workspace
+  hosted_zone = join(".", [local.environment, var.root_domain])
+  account     = data.aws_caller_identity.current.account_id
 
-  mgmt_account_mapping = {
-    management-dev = ["development", "qa", "integration"]
-    management     = ["preprod", "production"]
-  }
+  zone_count = length(data.aws_availability_zones.current.zone_ids)
+  zone_names = data.aws_availability_zones.current.names
 
   common_tags = {
     Environment = local.environment
-    Application = "aws-internet-egress"
-    CreatedBy   = "terraform"
-    Owner       = "platform"
+    Application = local.name
+    Terraform   = "true"
+    Owner       = var.project_owner
+    Team        = var.project_team
   }
 
-  environment = terraform.workspace == "default" ? "management-dev" : terraform.workspace
+  squid_config_s3_main_prefix = "egress-proxy"
 
-  cidr_block = {
-    management-dev = "x.x.x.x/24"
-    management     = "x.x.x.x/24"
-  }
-
-  squid_config_s3_main_prefix = "internet-proxy"
-
-  ecs_squid_config_s3_main_prefix = "container-internet-proxy"
+  ecs_squid_config_s3_main_prefix = "container-egress-proxy"
 
   squid_conf_filename = "squid.conf"
 
@@ -63,9 +50,7 @@ locals {
     management     = "mgt."
   }
 
-  dw_domain = "${local.env_prefix[local.environment]}${local.parent_domain}"
-
-  host_ranges = jsondecode(data.aws_secretsmanager_secret_version.internet_egress.secret_binary)["host_ranges"]
+//  dw_domain = "${local.env_prefix[local.environment]}${var.root_domain}"
 
   whitelist_names = {
     ci_cd        = "whitelist_ci_cd"
@@ -73,15 +58,6 @@ locals {
     aws_services = "whitelist_aws_services"
   }
 
-  whitelists = [
-    "ci_cd",
-    "packer",
-    "aws_services",
-  ]
-
-  deploy_ithc_infra = {
-    management-dev = false
-    management     = false
-  }
+  whitelists = ["ci_cd"]
 
 }
